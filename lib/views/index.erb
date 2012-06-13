@@ -1,3 +1,11 @@
-<h1><%= title %></h1>
+<% if email %>
 
-<p>Hi everyone!!</p>
+  <p>Logged in as <%= email %>.<a href="/session/destroy">Logout</a></p>
+
+<% else %>
+
+  <p><a href="/login">Login</a></p>
+
+  <p><a href="/user/new">Register</a></p>
+
+<% end %>

@@ -1,0 +1,27 @@
+<% if errors %>
+
+  <div id="errors">
+  
+  <% errors.each do |e| %>
+
+    <p><%= e %></p><br />
+
+  <% end %>
+
+  </div>
+
+<% end %>
+
+<form id="login" action="/login" method="POST">
+
+  <p>Username:</p>
+
+  <p><input type="text" name="email"></p>
+
+  <p>Password:</p>
+
+  <p><input type="text" name="password"></p>
+  
+  <p><input type="submit" value="Login"></p>
+
+</form>
