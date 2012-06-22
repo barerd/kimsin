@@ -2,11 +2,7 @@
 
   <div id="errors">
   
-  <% errors.each do |e| %>
-
-    <p><%= e %></p><br />
-
-  <% end %>
+    <p><%= errors %></p><br />
 
   </div>
 
@@ -25,3 +21,5 @@
   <p><input type="submit" value="Login"></p>
 
 </form>
+
+<p><a href="/user/new" onclick="<% session.clear %>">Register</a></p>

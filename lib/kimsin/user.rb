@@ -4,74 +4,70 @@ require 'dm-validations'
 
 require 'bcrypt'
 
-module Kimsin
+DataMapper.setup :default, 'sqlite3:///home/barerd/RProjects/kimsin/users.db' 
 
-  DataMapper.setup :default, 'sqlite3:///home/barerd/RProjects/kimsin/users.db' 
+class User 
 
-  class User 
+  attr_accessor :password, :confirm_password
 
-    attr_accessor :password, :confirm_password
+  attr_reader :password_hash
 
-    attr_reader :password_hash
+  include DataMapper::Resource
 
-    include DataMapper::Resource
+  property :id, Serial
 
-    property :id, Serial
+  property :email, String, :required => true, :unique => true, :format => :email_address,
 
-    property :email, String, :required => true, :unique => true, :format => :email_address,
+            :messages => {
+            
+            :presence => "We need your email address.",
 
-             :messages => {
-             
-             :presence => "We need your email address.",
+            :is_unique => "We already have that email.",
 
-             :is_unique => "We already have that email.",
+            :format => "Doesn't look like an email adress."
 
-             :format => "Doesn't look like an email adress."
+            }
 
-             }
+  property :password_salt, String
 
-    property :password_salt, String
+  property :password_hash, String, :length => 80
 
-    property :password_hash, String, :length => 80
+  validates_presence_of :password, :confirm_password, :messages => { :presence => "You have to type a password and confirm it." }
 
-    validates_presence_of :password, :confirm_password, :messages => { :presence => "You have to type a password and confirm it." }
+  validates_format_of :password, :confirm_password, :with => /^(?=.*\d)(?=.*([a-z]|[A-Z]))([\x20-\x7E]){8,40}$/,
 
-    validates_format_of :password, :confirm_password, :with => /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])([\x20-\x7E]){8,40}$/,
+  										:messages => { :format => "The password should be at least 8 characters long, contain one lowercase, one uppercase letter, one digit and one special character." }
 
-                        :messages => { :format => "The password should be 8 to 40 characters long and contain at least one digit, one lowercase and one uppercase letter and one special character." }
+  before :save, :encrypt_password
 
-    before :save, :encrypt_password
+  def self.authenticate email, password
 
-    def self.authenticate email, password
+    user = User.first :email => email
 
-      user = User.first :email => email
+    if user && user.password_hash == BCrypt::Engine.hash_secret(password, user.password_salt)
 
-      if user && user.password_hash == BCrypt::Engine.hash_secret(password, user.password_salt)
+      user
 
-        user
+    else
 
-      else
-
-        nil
-
-      end
-
-    end
-
-    def encrypt_password
-
-      if password != nil
-
-        self.password_salt = BCrypt::Engine.generate_salt
-
-        self.password_hash = BCrypt::Engine.hash_secret password, password_salt
-
-      end
+      nil
 
     end
 
   end
-  
-  DataMapper.finalize
+
+  def encrypt_password
+
+    if password != nil
+
+      self.password_salt = BCrypt::Engine.generate_salt
+
+      self.password_hash = BCrypt::Engine.hash_secret password, password_salt
+
+    end
+
+  end
 
 end
+
+DataMapper.finalize

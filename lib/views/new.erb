@@ -4,7 +4,7 @@
   
   <% errors.each do |e| %>
 
-    <p><%= e %></p><br />
+    <p><%= e.to_s %></p><br />
 
   <% end %>
 
@@ -26,6 +26,8 @@
 
   <p><input type="text" name="confirm_password"></p>
   
-  <p><input type="submit" value="Register"></p>
+  <p><input type="submit" value="Register" id="Register"></p>
 
 </form>
+
+<p><a href="/login" onclick="<% session.clear %>">Login</a></p>

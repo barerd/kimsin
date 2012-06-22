@@ -2,11 +2,11 @@ require "sinatra"
 
 require "erb"
 
-require_relative "../lib/kimsin/version"
+require_relative "../lib/kimsin/version.rb"
 
-require_relative "../lib/kimsin/user"
+require_relative "../lib/kimsin/user.rb"
 
-module Kimsin
+class Kimsin < Sinatra::Base
 
   use Rack::Session::Pool, :expire_after => 2592000
 
@@ -15,6 +15,18 @@ module Kimsin
   configure :development do  
 
     DataMapper.auto_migrate!  
+
+  end
+
+  configure :test do  
+
+    DataMapper.auto_migrate!  
+
+  end
+
+  configure :production do  
+
+    DataMapper.auto_update!  
 
   end
 
@@ -40,7 +52,7 @@ module Kimsin
 
   get "/user/new" do
 
-    session[:errors] = session[:errors] || nil
+    session[:errors] = session[:errors]
 
     erb :new, :locals => { :errors => session[:errors] }
 
@@ -52,8 +64,6 @@ module Kimsin
 
     if user.save
 
-      status 201
-
       session[:errors] = nil
 
       session[:user_id] = user.id
@@ -61,8 +71,6 @@ module Kimsin
       redirect "/"
 
     else
-
-      status 412
 
       session[:errors] = user.errors
 
@@ -74,7 +82,7 @@ module Kimsin
 
   get "/login" do
 
-    session[:errors] = session[:errors] || nil
+    session[:errors] = session[:errors]
 
     erb :login, :locals => { :errors => session[:errors] }
   
@@ -86,8 +94,6 @@ module Kimsin
 
     if user
 
-      status 201
-
       session[:errors] = nil
 
       session[:user_id] = user.id
@@ -95,8 +101,6 @@ module Kimsin
       redirect "/"
 
     else
-
-      status 202
 
       session[:errors] = "No such user or bad password."
 
@@ -114,10 +118,6 @@ module Kimsin
   
   end
 
-  def current_user
-
-    current_user ||= User.find(session[:user_id]) if session[:user_id]
-
-  end
+  run! if app_file == $0
 
 end
