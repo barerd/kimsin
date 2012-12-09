@@ -4,7 +4,7 @@ require 'dm-validations'
 
 require 'bcrypt'
 
-DataMapper.setup :default, 'sqlite3:///home/basar/Documents/RProjects/kimsin/users.db' 
+DataMapper.setup :default, 'sqlite::memory:' 
 
 class User 
 
