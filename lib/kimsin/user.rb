@@ -4,7 +4,7 @@ require 'dm-validations'
 
 require 'bcrypt'
 
-DataMapper.setup :default, 'sqlite3:///home/barerd/RProjects/kimsin/users.db' 
+DataMapper.setup :default, 'sqlite3:///home/basar/Documents/RProjects/kimsin/users.db' 
 
 class User 
 
@@ -34,7 +34,7 @@ class User
 
   validates_presence_of :password, :confirm_password, :messages => { :presence => "You have to type a password and confirm it." }
 
-  validates_format_of :password, :confirm_password, :with => /^(?=.*\d)(?=.*([a-z]|[A-Z]))([\x20-\x7E]){8,40}$/,
+  validates_format_of :password, :confirm_password, :with => /(?=^.{8,}$)(?=.*\d)(?=.*\W+)(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/,
 
   										:messages => { :format => "The password should be at least 8 characters long, contain one lowercase, one uppercase letter, one digit and one special character." }
 
